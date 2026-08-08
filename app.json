@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "scheme": "qrscanner",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0d9488"
     },
