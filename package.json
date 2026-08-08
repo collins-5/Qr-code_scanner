@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^8.0.2",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "8.4.4",
@@ -60,7 +61,6 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@babel/preset-env": "^8.0.2",
     "@types/react": "~19.1.0",
     "babel-plugin-module-resolver": "^5.0.3",
     "babel-preset-expo": "~54.0.10",
