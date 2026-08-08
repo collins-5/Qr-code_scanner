@@ -44,7 +44,8 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to import QR codes."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {
