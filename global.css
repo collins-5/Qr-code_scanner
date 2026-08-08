@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 25% 97%;
+    --foreground: 218 32% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 218 32% 15%;
+    --primary: 227 100% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 220 20% 95%;
+    --muted-foreground: 218 16% 47%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 227 100% 59%;
+
+    --primary-dark:    227 85% 45%;
+    --primary-deep:    226 70% 28%;
+    --primary-navy:    218 32% 15%;
+    --primary-glow:    227 90% 65%;
+    --primary-light:   227 100% 97%;
+    --primary-mid:     227 100% 92%;
+    --primary-border:  227 90% 85%;
+    --primary-faint:   227 100% 95%;
+    --primary-subtle:  227 100% 96%;
+    --surface-page:    220 25% 97%;
+    --surface-header:  210 50% 99%;
+    --border-card:     220 20% 85%;
+    --border-light:    220 25% 92%;
+    --border-faint:    220 25% 95%;
+  }
+
+  .dark {
+    --background: 222 45% 6%;
+    --foreground: 213 80% 95%;
+    --card: 222 42% 10%;
+    --card-foreground: 213 80% 95%;
+    --primary: 224 90% 72%;
+    --primary-foreground: 222 45% 8%;
+    --secondary: 222 40% 13%;
+    --secondary-foreground: 213 80% 95%;
+    --muted: 222 40% 13%;
+    --muted-foreground: 218 18% 56%;
+    --accent: 222 40% 13%;
+    --accent-foreground: 213 80% 95%;
+    --destructive: 0 72% 72%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 71% 55%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 60%;
+    --warning-foreground: 0 0% 100%;
+    --border: 222 38% 15%;
+    --input: 222 38% 15%;
+    --ring: 224 90% 72%;
+
+    --primary-dark:    222 85% 62%;
+    --primary-deep:    222 55% 8%;
+    --primary-navy:    220 45% 14%;
+    --primary-glow:    224 70% 45%;
+    --primary-light:   222 50% 10%;
+    --primary-mid:     222 45% 14%;
+    --primary-border:  222 40% 22%;
+    --primary-faint:   222 40% 10%;
+    --primary-subtle:  222 42% 8%;
+    --surface-page:    222 50% 5%;
+    --surface-header:  222 52% 7%;
+    --border-card:     222 35% 19%;
+    --border-light:    222 38% 14%;
+    --border-faint:    222 40% 10%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
