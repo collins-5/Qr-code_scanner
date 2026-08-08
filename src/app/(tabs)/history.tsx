@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Alert, RefreshControl } from "react-native";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -14,11 +14,16 @@ import SwipeableTabs from "@/components/ui/swipeable-tabs";
 type Timeout = ReturnType<typeof setTimeout>;
 
 export default function HistoryScreen() {
-  const { scans, deleteScan, clearHistory, toggleFavorite } = useScanStore();
+  const { scans, deleteScan, clearHistory, toggleFavorite, loadScans } = useScanStore();
   const { brand, surface } = useThemeColors();
   const [refreshing, setRefreshing] = useState(false);
   const [filterType, setFilterType] = useState<FilterType>("all");
   const deleteTimeoutRef = useRef<Timeout | null>(null);
+
+  useEffect(() => {
+    loadScans();
+  }, []);
+
 
   const getFilteredScans = useCallback(
     (type: FilterType) => {
@@ -29,8 +34,8 @@ export default function HistoryScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    loadScans().finally(() => setRefreshing(false));
+  }, [loadScans]);
 
   const handleScanPress = useCallback((id: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

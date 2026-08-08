@@ -10,9 +10,10 @@ interface ScanActionsProps {
   scanId: string;
   content?: string;
   type?: string;
+  qrImagePath?: string;
 }
 
-export function ScanActions({ scanId, content, type }: ScanActionsProps) {
+export function ScanActions({ scanId, content, type, qrImagePath }: ScanActionsProps) {
   const { deleteScan } = useScanStore();
 
   const handleDelete = () => {
@@ -41,6 +42,7 @@ export function ScanActions({ scanId, content, type }: ScanActionsProps) {
         payload: {
           content: content,
           type: type || "text",
+          qrImagePath: qrImagePath,
         },
       });
     }

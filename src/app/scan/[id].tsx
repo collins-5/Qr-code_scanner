@@ -10,7 +10,7 @@ import { ScanActions } from "@/components/scan/scan-actions";
 
 export default function ScanDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { scans } = useScanStore();
+  const { scans,isLoading } = useScanStore();
   const { surface } = useThemeColors();
 
   const scan = scans.find((s) => s.id === id);
@@ -32,6 +32,7 @@ export default function ScanDetailsScreen() {
         scanId={scan.id} 
         content={scan.content}
         type={scan.type}
+        qrImagePath={scan.qrImagePath}
       />
     </ScrollView>
   );

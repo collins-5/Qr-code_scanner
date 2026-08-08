@@ -1,26 +1,35 @@
-import { View, Text, TouchableOpacity, Alert, Vibration } from "react-native";
+import { View, Text, Vibration, Alert } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
+import * as FileSystem from "expo-file-system/legacy";
+import QRCode from "react-native-qrcode-svg";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { detectQRType } from "@/lib/utils/qrUtils";
-import { useScanStore } from "@/stores/scanStore";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ScannerOverlay } from "@/components/scanner/scanner-overlay";
 import { PermissionDenied } from "@/components/scanner/permission-denied";
+import { useScanStore } from "@/stores/scanStore";
 
 type Timeout = ReturnType<typeof setTimeout>;
+
+interface PendingCapture {
+  scanId: string;
+  content: string;
+}
 
 export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
-  const { addScan } = useScanStore();
+  const [pendingCapture, setPendingCapture] = useState<PendingCapture | null>(null);
+  const { addScan, updateQRImagePath } = useScanStore();
   const { brand } = useThemeColors();
   const lastScannedRef = useRef<string | null>(null);
   const scanTimeoutRef = useRef<Timeout | null>(null);
   const isProcessingRef = useRef<boolean>(false);
+  const qrRef = useRef<any>(null);
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -36,7 +45,31 @@ export default function ScannerScreen() {
     };
   }, []);
 
-  const handleBarCodeScanned = ({ data }: { data: string }) => {
+  useEffect(() => {
+    if (!pendingCapture) return;
+
+    const timeout = setTimeout(() => {
+      qrRef.current?.toDataURL(async (base64: string) => {
+        try {
+          const fileUri = `${FileSystem.documentDirectory}qr-${pendingCapture.scanId}.png`;
+
+          await FileSystem.writeAsStringAsync(fileUri, base64, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+
+          await updateQRImagePath(pendingCapture.scanId, fileUri);
+        } catch (error) {
+          console.error("Failed to save QR image:", error);
+        } finally {
+          setPendingCapture(null);
+        }
+      });
+    }, 50);
+
+    return () => clearTimeout(timeout);
+  }, [pendingCapture]);
+
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
     if (isProcessingRef.current || lastScannedRef.current === data || scanned) {
       return;
     }
@@ -49,9 +82,9 @@ export default function ScannerScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     const type = detectQRType(data);
-    const scanId = Date.now().toString();
 
-    addScan({ content: data, type });
+    const scanId = await addScan({ content: data, type });
+    setPendingCapture({ scanId, content: data });
 
     router.push(`/scan/${scanId}`);
 
@@ -74,7 +107,6 @@ export default function ScannerScreen() {
   if (!permission) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text>Requesting camera permission...</Text>
       </View>
     );
   }
@@ -100,6 +132,20 @@ export default function ScannerScreen() {
           brandColor={brand.primary}
         />
       </CameraView>
+
+      {pendingCapture && (
+        <View style={{ position: "absolute", top: -9999, left: -9999 }}>
+          <QRCode
+            value={pendingCapture.content}
+            size={300}
+            color={brand.primary}
+            backgroundColor="white"
+            getRef={(ref) => {
+              qrRef.current = ref;
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 }

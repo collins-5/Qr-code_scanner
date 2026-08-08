@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Alert, Linking, Share } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Linking, Share, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { Scan } from "@/stores/scanStore";
 import Icon from "../ui/icon";
+import { File } from "expo-file-system";
 
 interface ScanContentProps {
   scan: Scan;
@@ -14,6 +15,7 @@ interface ScanContentProps {
 export function ScanContent({ scan }: ScanContentProps) {
   const { brand, surface, text } = useThemeColors();
   const isURL = scan.type === "url";
+  const hasImage = scan.qrImagePath && scan.qrImagePath.length > 0;
 
   const handleCopy = async () => {
     await Clipboard.setStringAsync(scan.content);
@@ -51,6 +53,20 @@ export function ScanContent({ scan }: ScanContentProps) {
 
   return (
     <View className="mx-4 mt-4 p-4 rounded-xl" style={{ backgroundColor: surface.card }}>
+      {/* QR Code Image */}
+      {hasImage && (
+        <View className="mb-4 items-center">
+          <Image
+            source={{ uri: scan.qrImagePath }}
+            style={{ width: 200, height: 200, borderRadius: 12 }}
+            resizeMode="contain"
+          />
+          <Text className="text-xs mt-2" style={{ color: text.muted }}>
+            QR Code Image
+          </Text>
+        </View>
+      )}
+
       <Text className="text-sm font-semibold mb-2" style={{ color: text.muted }}>
         Content
       </Text>

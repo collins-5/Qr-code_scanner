@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useState, useEffect } from "react";
 import { View, ActivityIndicator, StatusBar } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { initDatabase } from "@/lib/database";
 import {
   DarkTheme,
   DefaultTheme,
@@ -19,6 +20,7 @@ import {
 import { useThemeColors } from "@/hooks/useThemeColors";
 import "@/components/ui/bottom-sheets";
 import "../../global.css";
+import { LoadingApp } from "@/components/core/loading-app";
 
 const ONBOARDING_KEY = "@onboarding_completed";
 
@@ -28,7 +30,10 @@ function ThemedRoot() {
   const { isDark } = useThemePreference();
   const { brand, surface, text, border } = useThemeColors();
   const insets = useSafeAreaInsets();
-  
+
+  useEffect(() => {
+    initDatabase().catch(() => {});
+  }, []);
 
   useEffect(() => {
     const prepare = async () => {
@@ -45,16 +50,6 @@ function ThemedRoot() {
 
     prepare();
   }, []);
-
-  useEffect(() => {
-    if (isReady && isOnboarded !== null) {
-      if (!isOnboarded) {
-        router.replace("/onboarding");
-      } else {
-        router.replace("/(tabs)");
-      }
-    }
-  }, [isReady, isOnboarded]);
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(surface.appGray).catch(() => undefined);
@@ -76,29 +71,21 @@ function ThemedRoot() {
 
   if (!isReady || isOnboarded === null) {
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: surface.appGray,
-        }}
-      >
-        <ActivityIndicator size="large" color={brand.primary} />
-      </SafeAreaView>
+      <LoadingApp/>
     );
   }
 
   return (
     <ThemeProvider value={navigationTheme}>
       <SheetProvider>
-          <StatusBar
-            translucent
-            backgroundColor={surface.header}
-            barStyle={isDark ? "light-content" : "dark-content"}
-          />
-          <View style={{ flex: 1, paddingTop: insets.top}}>
+        <StatusBar
+          translucent
+          backgroundColor={surface.header}
+          barStyle={isDark ? "light-content" : "dark-content"}
+        />
+        <View style={{ flex: 1, paddingTop: insets.top }}>
           <Stack
+            initialRouteName={isOnboarded ? "(tabs)" : "onboarding"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: brand.primary,
@@ -137,22 +124,13 @@ function ThemedRoot() {
             />
 
             <Stack.Screen
-              name="modal/share"
-              options={{
-                presentation: "modal",
-                title: "Share QR Code",
-                headerBackTitle: "Cancel",
-              }}
-            />
-
-            <Stack.Screen
               name="[...unmatched]"
               options={{
                 headerShown: false,
               }}
             />
           </Stack>
-          </View>
+        </View>
       </SheetProvider>
     </ThemeProvider>
   );
